@@ -139,4 +139,35 @@ export const calculateScore = (timeRemaining: number, levelNumber: number): numb
     const levelMultiplier = 1 + (levelNumber * 0.1);
 
     return Math.floor((baseScore + timeBonus) * levelMultiplier);
+};
+
+// Shuffle an array using Fisher-Yates algorithm
+export const shuffleArray = <T>(array: T[]): T[] => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+};
+
+// Generate a new pattern with random colors
+export const generateNewPattern = (availableColors: Color[], length: number): Pattern => {
+    const colors: Color[] = [];
+    for (let i = 0; i < length; i++) {
+        colors.push(getRandomColor(availableColors));
+    }
+    return { colors };
+};
+
+// Shuffle patterns after a match
+export const shufflePatterns = (level: Level): Level => {
+    const newPatterns: Pattern[] = level.patterns.map(pattern => {
+        return generateNewPattern(level.availableColors, pattern.colors.length);
+    });
+
+    return {
+        ...level,
+        patterns: newPatterns,
+    };
 }; 

@@ -17,7 +17,8 @@ import {
     checkPatternMatch,
     removeMatchedPattern,
     calculateScore,
-    createColorBlock
+    createColorBlock,
+    shufflePatterns
 } from '../utils/gameUtils';
 
 // Define action types
@@ -30,7 +31,8 @@ type GameAction =
     | { type: 'REMOVE_TOP_BLOCK'; payload: { tubeId: string } }
     | { type: 'CHECK_PATTERN_MATCHES' }
     | { type: 'TICK_TIMER' }
-    | { type: 'NEXT_LEVEL' };
+    | { type: 'NEXT_LEVEL' }
+    | { type: 'SHUFFLE_PATTERNS' };
 
 // Initial game state
 const initialGameState: GameState = {
@@ -134,10 +136,14 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 return state;
             }
 
+            // If a pattern was matched, shuffle the patterns
+            const shuffledLevel = shufflePatterns(state.level);
+
             return {
                 ...state,
                 tubes: updatedTubes,
                 score: state.score + additionalScore,
+                level: shuffledLevel,
             };
         }
 
@@ -178,6 +184,14 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
                 tubes: [createTube(nextLevel.tubeCapacity)],
                 score: state.score + levelScore,
                 timeRemaining: nextLevel.timeLimit,
+            };
+        }
+
+        case 'SHUFFLE_PATTERNS': {
+            const shuffledLevel = shufflePatterns(state.level);
+            return {
+                ...state,
+                level: shuffledLevel,
             };
         }
 
